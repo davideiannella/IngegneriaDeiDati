@@ -103,10 +103,10 @@ public class LuceneManager {
         try {
             Path parentWorkingDir = Paths.get(System.getProperty("user.dir")).getParent();
             System.out.println("current working dir: " + parentWorkingDir.toString());
-            String resourcePath = "IDD/hw-2/src/main/resources/documents";
-            Path fullPath = parentWorkingDir.resolve("IDD/hw-2/src/main/resources/documents");
+
+            Path fullPath = parentWorkingDir.resolve("Hw-2/src/main/resources/documents");
             if(parentWorkingDir.toString().contains("IDD")){
-                fullPath = parentWorkingDir.resolve("hw-2/src/main/resources/documents");
+                fullPath = parentWorkingDir.resolve("Hw-2/src/main/resources/documents");
             }
 
             System.out.println("full path: " + fullPath.toString());

@@ -2,6 +2,7 @@ package davideiannella.example.mylucene;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.lucene.queryparser.classic.QueryParser;
 
 
 import java.io.File;
