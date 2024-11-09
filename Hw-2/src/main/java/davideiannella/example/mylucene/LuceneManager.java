@@ -39,8 +39,13 @@ public class LuceneManager {
         try (Directory directory = FSDirectory.open(luceneIndexPath)) {
             InputManager im=new InputManager();
 
+            long startTime = System.currentTimeMillis();
+
+
             // Opening the file-system directory for the Lucene index.
             indexExistingFiles(indexDocs(directory, new SimpleTextCodec(), docsList));
+
+            System.out.println("Indexing time: " + (System.currentTimeMillis() - startTime) + "ms");
             // Opens a reader for the Lucene index; this is read-only and prevents modifications.
             try (IndexReader reader = DirectoryReader.open(directory)) {
                 String userInput = im.readUserInput("What are you looking for today?\n");
@@ -50,7 +55,7 @@ public class LuceneManager {
                 Query query = parser.parse(userInput);
                 // Allows searching within Lucene's index
                 IndexSearcher searcher = new IndexSearcher(reader);
-                long startTime = System.currentTimeMillis();
+                startTime = System.currentTimeMillis();
                 TopDocs results = searcher.search(query, 10);
                 System.out.println("Search time: " + (System.currentTimeMillis() - startTime) + "ms");
                 for (ScoreDoc scoreDoc : results.scoreDocs) {
