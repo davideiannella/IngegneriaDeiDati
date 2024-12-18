@@ -37,12 +37,16 @@ public class MetricCalculator {
                                      Map<MyAbstractTable, Integer> relevanceMap,
                                      int p) {
         double dcg = 0.0;
+        double rel1= 0.0;
         for (int i = 0; i < Math.min(retrievedTables.size(), p); i++) {
             MyAbstractTable table = retrievedTables.get(i);
             int rel = relevanceMap.getOrDefault(table, 0);
+            if(i==1){
+                rel1= relevanceMap.getOrDefault(table, 0);
+            }
             dcg += rel / Math.log(2); // i + 2 perché i parte da 0
         }
-        return dcg;
+        return rel1 + dcg;
     }
 
     private static double computeIDCG(Map<MyAbstractTable, Integer> relevanceMap, int p) {
