@@ -40,7 +40,7 @@ public class MetricCalculator {
         for (int i = 0; i < Math.min(retrievedTables.size(), p); i++) {
             MyAbstractTable table = retrievedTables.get(i);
             int rel = relevanceMap.getOrDefault(table, 0);
-            dcg += (Math.pow(2, rel) - 1) / (Math.log(i + 2) / Math.log(2)); // i + 2 perché i parte da 0
+            dcg += rel / Math.log(2); // i + 2 perché i parte da 0
         }
         return dcg;
     }
@@ -53,7 +53,7 @@ public class MetricCalculator {
         double idcg = 0.0;
         for (int i = 0; i < Math.min(sortedRelevances.size(), p); i++) {
             int rel = sortedRelevances.get(i);
-            idcg += (Math.pow(2, rel) - 1) / (Math.log(i + 2) / Math.log(2));
+            idcg += rel / Math.log(2);
         }
         return idcg;
     }

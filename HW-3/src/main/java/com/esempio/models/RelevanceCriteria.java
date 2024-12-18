@@ -18,7 +18,10 @@ public class RelevanceCriteria {
         Set<String> queryKeywords = new HashSet<>(Arrays.asList(query.toLowerCase().split("\\s+")));
         Set<String> tableKeywords = new HashSet<>(Arrays.asList(table.getTableName().toLowerCase().split("_")));
 
-        return tableKeywords.containsAll(queryKeywords);
+
+        return queryKeywords.contains(query);
+
+        //return tableKeywords.containsAll(queryKeywords);
     }
 
     public static int contaCaratteriComuni(String s1, String s2) {
