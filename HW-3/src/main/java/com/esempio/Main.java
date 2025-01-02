@@ -27,38 +27,52 @@ public class Main {
         QueryParser parser = new QueryParser("titolo", new WhitespaceAnalyzer());
         // Builds query
         List<Document> docsList = new ArrayList<Document>();
+        String breakWord = "stop";
+        String userInput = "";
+        List<MyAbstractTable> tableExtractedFromQueryDocumentResult = new ArrayList<>();
+        Map<String, List<MyAbstractTable>> queryResults = new HashMap<>();
+        // Istanzio la lista di tabelle che estrarrò dai documenti Lucene
+        Map<String, List<MyAbstractTable>> singleQueryResults = new HashMap<>();
         try {
-            InputManager ih = new InputManager();
-            String userInput = ih.readUserInput("What are you looking for today?\n");
-            if(userInput.isEmpty()) throw new davideiannella.example.mylucene.EmptyUserInputException();
-            // Compie la ricerca e salva i documenti Lucene
-            TopDocs queryDocumentsResult = new com.esempio.mylucene.LuceneManager().runHw_3_davide(parser,docsList, userInput);
-            // Istanzio la lista di tabelle che estrarrò dai documenti Lucene
-            List<MyAbstractTable> tableExtractedFromQueryDocumentResult = new ArrayList<>();
-            IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(Paths.get("target/idx0"))));
-            // Conversione da TopDocs (Lucene) a List<MyAbstractTable>
-            // foreach Doc in queryDocumentsResult, extract table and put in tableExtractedFromQueryDocumentResult
-            for (ScoreDoc scoreDoc : queryDocumentsResult.scoreDocs) {
-                tableExtractedFromQueryDocumentResult.add(
-                        new MyTable(
-                                searcher.doc(
-                                        scoreDoc.doc)));
+            while (!userInput.equals(breakWord)) {
+                try {
+                    userInput = InputManager.readString("What are you looking for today?\n");
+                } catch (Exception e) {
+                    System.out.println(e);
+                    userInput = "";
+                }
+                if (userInput.isEmpty())
+                    continue;
+                // Compie la ricerca e salva i documenti Lucene
+                TopDocs queryDocumentsResult = new com.esempio.mylucene.LuceneManager().runHw_3_davide(parser,docsList, userInput);
+                // Istanzio la lista di tabelle che estrarrò dai documenti Lucene
+                IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(Paths.get("target/idx0"))));
+                // Conversione da TopDocs (Lucene) a List<MyAbstractTable>
+                // foreach Doc in queryDocumentsResult, extract table and put in tableExtractedFromQueryDocumentResult
+                for (ScoreDoc scoreDoc : queryDocumentsResult.scoreDocs) {
+                    tableExtractedFromQueryDocumentResult.add(
+                            new MyTable(
+                                    searcher.doc(
+                                            scoreDoc.doc)));
+                }
+                // queryResults    Map che associa ogni query alla lista delle tabelle recuperate (risultati della query).
+                singleQueryResults.clear();
+                singleQueryResults.put(userInput, tableExtractedFromQueryDocumentResult);
+                queryResults.put(userInput, tableExtractedFromQueryDocumentResult);
+                System.out.println("calculating NDCG");
+                endHomeworkUsingNDCG(tableExtractedFromQueryDocumentResult,userInput, singleQueryResults);
+                System.out.println("done");
             }
 
-            // queryResults    Map che associa ogni query alla lista delle tabelle recuperate (risultati della query).
-            Map<String, List<MyAbstractTable>> queryResults = new HashMap<>();
-
-            queryResults.put(userInput, tableExtractedFromQueryDocumentResult);
-
+            System.out.println("calculating MRR");
             endHomeworkUsingMRR(tableExtractedFromQueryDocumentResult,userInput, queryResults);
-
-            endHomeworkUsingNDCG(tableExtractedFromQueryDocumentResult,userInput, queryResults);
+            System.out.println("done");
 
         } catch (Exception e) {
+            InputManager.closeScanner();
             throw new RuntimeException(e);
         }
     }
-
     private static void endHomeworkUsingMRR(List<MyAbstractTable> tableExtractedFromQueryDocumentResult, String userInput, Map<String, List<MyAbstractTable>> queryResults){
         // Metodo per riempire le gold tables
         Map<String, Set<MyAbstractTable>> relevantTablesMap = new HashMap<>();

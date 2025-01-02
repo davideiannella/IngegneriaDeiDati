@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.esempio.models.MyTable;
+import com.esempio.utils.JsonExtractor;
 import com.esempio.utils.Utils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
@@ -251,15 +253,18 @@ public class LuceneManager {
     }
 
     private void indexFile(IndexWriter writer, File file) throws IOException {
-        Document document = new Document();
-        document.add(new TextField("titolo", file.getName(), Field.Store.YES));
+        try {
+            List<MyTable> tables = JsonExtractor.estraiCaptionsETables(file);
+            for (MyTable table : tables) {
+                Document document = new Document();
+                document.add(new TextField("titolo", table.getTableName(), Field.Store.YES));
+                document.add(new TextField("contenuto", table.getTable(), Field.Store.YES));
 
-        String fileContent = readFileContent(file);
-        if (fileContent != null) {
-            document.add(new TextField("contenuto", fileContent, Field.Store.YES));
+                writer.addDocument(document);
+            }
+        } catch (Exception e) {
+            System.out.println("Couldn't parse JSON for JsonExtracotor");
         }
-
-        writer.addDocument(document);
     }
 
     private String readFileContent(File file) {

@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 
 public class InputManager {
-
+    private static final Scanner scanner = new Scanner(System.in);
     public static String readUserInput(String messageToDisplay) {
         Scanner scanner = new Scanner(System.in);
         System.out.print(messageToDisplay);
@@ -21,6 +21,18 @@ public class InputManager {
         scanner.close();
         // Escapes Lucene's special characters
         return QueryParser.escape(userInput);
+    }
+
+    public static String readString(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine();
+    }
+
+    /**
+     * Chiude lo Scanner. Deve essere chiamato quando l'applicazione non necessita più di leggere input.
+     */
+    public static void closeScanner() {
+        scanner.close();
     }
 
     public JsonNode readSingleJsonFileFromResourceFolder(String pathToJsonFile) {
